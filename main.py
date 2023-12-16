@@ -41,7 +41,7 @@ class App:
         self.show_total_students_label.place(x=720, y=70)
 
         self.show_total_students_label = util.get_text_ctk_label(self.main_window, str(self.student_id), 16, 'black')
-        self.show_total_students_label.place(x=870, y=70)
+        self.show_total_students_label.place(x=850, y=70)
 
         self.title_text_main_window = util.get_text_ctk_label(self.main_window, "Face Recognition", 24, "black")
         self.title_text_main_window.place(x=720, y=20)
@@ -141,7 +141,7 @@ class App:
             util.show_error("Sorry, no face detected.\n\nPlease, Try again")
             return
         else:
-            static_student_id
+            pass
 
         student_name = self.ref.child(static_student_id).get()['name']
         student_major = self.ref.child(static_student_id).get()['major']
@@ -149,13 +149,13 @@ class App:
         student_year = self.ref.child(static_student_id).get()['year']
         student_total_attendance = self.ref.child(static_student_id).get()['total_attendance']
         student_last_attendance = self.ref.child(static_student_id).get()['last_attendance']
-        student_information = ("Name: "+student_name
-                         +"\nMajor: "+student_major
-                         +"\nStarting year: "+student_starting_year
-                         +"\nYear: "+str(student_year)
-                         +"\nTotal attendance: "
-                         +str(student_total_attendance)
-                         +"\nLast attendance: "+student_last_attendance)
+        student_information = ("Student id: " + static_student_id
+                         + "\nName: " + student_name
+                         + "\nMajor: " + student_major
+                         + "\nStarting year: "+student_starting_year
+                         + "\nYear: "+str(student_year)
+                         + "\nTotal attendance: " + str(student_total_attendance)
+                         + "\nLast attendance: " + student_last_attendance)
 
         self.register_new_user_window = ctk.CTkToplevel(self.main_window)
         self.register_new_user_window.geometry("1200x520+370+120")
@@ -168,7 +168,7 @@ class App:
 
         self.add_profile_img_to_label(static_student_id, self.capture_label)
 
-        self.profile_label_register_new_user = util.get_text_ctk_label(self.register_new_user_window, 'Profile', 36, 'white')
+        self.profile_label_register_new_user = util.get_text_ctk_label(self.register_new_user_window, 'Profile', 24, 'white')
         self.profile_label_register_new_user.place(x=750, y=20)
 
         self.information_label_register_new_user = util.get_information_text_ctk_label(self.register_new_user_window, student_information, 24, 'white')
