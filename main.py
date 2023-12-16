@@ -106,7 +106,7 @@ class App:
         student_already_attended = self.ref.child(static_student_id).get()['last_attendance']
         student_already_attended = student_already_attended.split(' ')[0]
         if  student_already_attended == datetime.datetime.now().strftime("%d/%m/%Y"):
-            util.show_error("You already attended today.")
+            util.show_checkmark("You already attended today.")
             return
         else :
             student_name = self.ref.child(static_student_id).get()['name']
@@ -141,7 +141,7 @@ class App:
             util.show_error("Sorry, no face detected.\n\nPlease, Try again")
             return
         else:
-            pass
+            static_student_id
 
         student_name = self.ref.child(static_student_id).get()['name']
         student_major = self.ref.child(static_student_id).get()['major']
@@ -173,10 +173,6 @@ class App:
 
         self.information_label_register_new_user = util.get_information_text_ctk_label(self.register_new_user_window, student_information, 24, 'white')
         self.information_label_register_new_user.place(x=750, y=60)
-
-
-
-
 
     def register_new_user(self):
 
