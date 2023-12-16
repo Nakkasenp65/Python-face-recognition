@@ -34,26 +34,26 @@ class App:
         print(self.student_id)
 
         self.main_window = tk.Tk()
-        self.main_window.geometry("980x520+350+100")
+        self.main_window.geometry("960x500+350+100")
         self.main_window.title("Face Recognition")
 
         self.show_total_students_label = util.get_text_ctk_label(self.main_window, 'Total students: ', 16, 'black')
-        self.show_total_students_label.place(x=750, y=70)
+        self.show_total_students_label.place(x=720, y=70)
 
         self.show_total_students_label = util.get_text_ctk_label(self.main_window, str(self.student_id), 16, 'black')
         self.show_total_students_label.place(x=870, y=70)
 
         self.title_text_main_window = util.get_text_ctk_label(self.main_window, "Face Recognition", 24, "black")
-        self.title_text_main_window.place(x=750, y=20)
+        self.title_text_main_window.place(x=720, y=20)
 
         self.login_button_main_window = util.get_ctk_button(self.main_window, "Login", "black", self.login )
-        self.login_button_main_window.place(x=820, y=300)
+        self.login_button_main_window.place(x=820, y=325)
 
         self.register_button_main_window = util.get_ctk_button(self.main_window, "Register", "black", self.register_new_user )
-        self.register_button_main_window.place(x=820, y=360)
+        self.register_button_main_window.place(x=820, y=385)
 
         self.show_profile_button_new_user_window = util.get_ctk_button(self.main_window, 'Profile','blue', self.show_profile)
-        self.show_profile_button_new_user_window.place(x=820, y=420)
+        self.show_profile_button_new_user_window.place(x=820, y=445)
 
         self.webcam_label = util.get_img_label(self.main_window)
         self.webcam_label.place(x=10, y=0, width=700, height=500)
@@ -103,16 +103,25 @@ class App:
             os.remove(unknown_img_path)
             return
 
-        student_name = self.ref.child(static_student_id).get()['name']
-        student_name = student_name.split(' ')[0]
-        total_attendance = self.ref.child(static_student_id).get()['total_attendance']
-        total_attendance += 1
-        last_attendance = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        self.ref.child(static_student_id).update({'last_attendance': last_attendance,
-                                                  'total_attendance': total_attendance})
-        print('Student ID: ', static_student_id)
-        notification = "Hello again, "+student_name+"\nDate: "+last_attendance
-        util.show_checkmark(notification)
+        student_already_attended = self.ref.child(static_student_id).get()['last_attendance']
+        student_already_attended = student_already_attended.split(' ')[0]
+        if  student_already_attended == datetime.datetime.now().strftime("%d/%m/%Y"):
+            util.show_error("You already attended today.")
+            return
+        else :
+            student_name = self.ref.child(static_student_id).get()['name']
+            student_name = student_name.split(' ')[0]
+
+            total_attendance = self.ref.child(static_student_id).get()['total_attendance']
+            total_attendance += 1
+
+            last_attendance = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+            self.ref.child(static_student_id).update({'last_attendance': last_attendance,
+                                                      'total_attendance': total_attendance})
+            print('Student ID: ', static_student_id)
+            notification = "Hello again, "+student_name+"\nDate: "+last_attendance
+            util.show_checkmark(notification)
 
     def show_profile(self):
         unknown_img_path = './.tmp.jpg'
@@ -188,29 +197,26 @@ class App:
 
         if is_registered:
             print(is_registered)
-            util.show_error("This person is already registered.")
+            util.show_error("You are already registered.")
             return
         elif is_no_face:
             print(is_no_face)
-            util.show_error("No face detected.")
+            util.show_error("Sorry, no face detected.\n\nPlease, Try again.")
             return
         else:
 
 
             '#custom tkinter window'
-            # self.register_new_user_window = tk.Toplevel(self.main_window)
             self.register_new_user_window = ctk.CTkToplevel(self.main_window)
             self.register_new_user_window.geometry("1200x520+370+120")
             self.register_new_user_window.resizable(False, False)
             self.register_new_user_window.title("Register New User")
 
             '#accept button'
-            # self.accept_button_register_new_user_window = util.get_ctk_button(self.register_new_user_window, 'Accept', 'green', self.accept_register_new_user)
             self.accept_button_register_new_user_window = util.get_ctk_button(self.register_new_user_window, 'Accept', 'green', self.accept_register_new_user)
             self.accept_button_register_new_user_window.place(x=750, y=450)
 
             '#try again button'
-            # self.try_again_button_register_new_user_window = util.get_button(self.register_new_user_window, 'Try Again', 'red', self.try_again_register_new_user)
             self.try_again_button_register_new_user_window = util.get_ctk_button(self.register_new_user_window, 'Try Again', 'red', self.try_again_register_new_user)
             self.try_again_button_register_new_user_window.place(x=930, y=450)
 
@@ -222,22 +228,21 @@ class App:
 
             '# Name Field'
             self.name_entry_label_register_new_user = util.get_text_ctk_label(self.register_new_user_window, 'Full name:', 16, 'white')
-            self.name_entry_label_register_new_user.place(x=750, y=40)
+            self.name_entry_label_register_new_user.place(x=770, y=40)
 
             self.name_entry_text_register_new_user = util.get_entry_input(self.register_new_user_window, 'Your name')
             self.name_entry_text_register_new_user.place(x=750, y=70)
 
             '# Faculty Field'
-            self.major_entry_label_register_new_user = util.get_text_ctk_label(self.register_new_user_window, 'Faculty:', 16, 'white')
-            self.major_entry_label_register_new_user.place(x=750, y=160)
+            self.major_entry_label_register_new_user = util.get_text_ctk_label(self.register_new_user_window, 'Major:', 16, 'white')
+            self.major_entry_label_register_new_user.place(x=770, y=160)
 
-            # self.major_entry_text_register_new_user = util.get_entry_input(self.register_new_user_window, 'Your faculty')
             self.major_entry_text_register_new_user = util.get_combobox(self.register_new_user_window)
             self.major_entry_text_register_new_user.place(x=750, y=190)
 
             '# Starting Year Field'
             self.starting_year_label_register_new_user = util.get_text_ctk_label(self.register_new_user_window, 'Starting Year:', 16, 'white')
-            self.starting_year_label_register_new_user.place(x=750, y=280)
+            self.starting_year_label_register_new_user.place(x=770, y=280)
 
             self.starting_year_entry_text_register_new_user = util.get_entry_input(self.register_new_user_window, 'Starting year')
             self.starting_year_entry_text_register_new_user.place(x=750, y=310)
@@ -282,53 +287,23 @@ class App:
 
     def accept_register_new_user(self):
 
-        is_no_face = False
-        is_registered = False
-        unknown_img_path = './.tmp.jpg'
+        name = self.name_entry_text_register_new_user.get()
+        major = self.major_entry_text_register_new_user.get()
+        starting_year = self.starting_year_entry_text_register_new_user.get()
 
-        cv2.imwrite(unknown_img_path, self.register_new_user_capture)
-        output = str(subprocess.check_output(['face_recognition', self.db_dir, unknown_img_path]))
-        print(output)
-        os.remove(unknown_img_path)
-        if output.__contains__("unknown_person"):
-            is_registered = False
-        elif output.__contains__("no_persons_found"):
-            is_no_face = True
-        else:
-            is_registered = True
-
-        if is_registered:
-            print(is_registered)
-            util.show_error("This person is already registered.")
+        if not name or not major or not starting_year:
+            util.empty_fields(self.register_new_user_window)
+            print("Please fill in all fields.")
             return
-        elif is_no_face:
-            print(is_no_face)
-            util.show_error("No face detected.")
-            return
+
         else:
-            print("Face detected.")
-            # ref = db.reference('Students')
-            name = self.name_entry_text_register_new_user.get()
-            major = self.major_entry_text_register_new_user.get()
-            starting_year = self.starting_year_entry_text_register_new_user.get()
+            util.show_checkmark("Registered success.")
 
-            if not name or not major or not starting_year:
-                util.empty_fields(self.register_new_user_window)
-                print("Please fill in all fields.")
-                return
-
-            else:
-                util.show_checkmark("Registered success.")
-                # encoding_img.append(encoding_img[0])
-
-                self.student_id += 1
-                self.add_to_db(name, major, starting_year, self.student_id)
-                cv2.imwrite(os.path.join(self.db_dir, str(self.student_id) + '.jpg'), self.register_new_user_capture)
-                self.show_total_students_label.configure(text=str(self.student_id))
-                self.register_new_user_window.destroy()
-
-
-
+            self.student_id += 1
+            self.add_to_db(name, major, starting_year, self.student_id)
+            cv2.imwrite(os.path.join(self.db_dir, str(self.student_id) + '.jpg'), self.register_new_user_capture)
+            self.show_total_students_label.configure(text=str(self.student_id))
+            self.register_new_user_window.destroy()
 
 
 if __name__ == "__main__":
