@@ -66,14 +66,29 @@ def get_entry_text(window):
 
 def get_entry_input(window, placeholder_text):
     inputtxt = ctk.CTkEntry(window, placeholder_text=placeholder_text, height=50, width=300, font=("Arial", 16),
-                            placeholder_text_color='#676767')
+                            placeholder_text_color='#676767', corner_radius=50)
     return inputtxt
 
 
 '#custom tkinter label'
 
 
+def get_information_text_ctk_label(window, text, fontsize, text_color):
+    label = ctk.CTkEntry(window,
+                         textvariable=text,
+                         font=("Century Gothic", fontsize),
+                         text_color=text_color,
+                         height=300,
+                         width=300,
+                         justify='left',
+                         state='disabled',
+                         corner_radius=50
+                         )
+    return label
+
 def get_text_ctk_label(window, text, fontsize, text_color):
+    if text.__contains__('-1'):
+        text = '0'
     label = ctk.CTkLabel(window,
                          text=text,
                          font=("Century Gothic", fontsize),
@@ -85,7 +100,7 @@ def get_text_ctk_label(window, text, fontsize, text_color):
 '#custom tkinter comboBox'
 def get_combobox(window):
     values = ['Computer science','Computer Engineering', 'Communications', 'Engineering', 'Business']
-    combobox = ctk.CTkComboBox(window, values=values, width=300, height=50, font=("Arial", 16))
+    combobox = ctk.CTkComboBox(window, values=values, width=300, height=50, font=("Arial", 16), corner_radius=50)
     return combobox
 
 
@@ -97,7 +112,7 @@ def show_error(text_message):
 
 
 def show_checkmark(text_message):
-    CTkMessagebox(message=text_message,icon="check", option_1="Okay")
+    CTkMessagebox(title="Notification", message=text_message,icon="check", option_1="Okay")
 
 def empty_fields(window):
     name_entry_empty_label = get_text_ctk_label(window, 'Name is not correct.', 14, '#B00000')
