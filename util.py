@@ -6,6 +6,8 @@ from tkinter import messagebox
 import face_recognition
 
 import customtkinter as ctk
+from CTkMessagebox import CTkMessagebox
+
 
 
 def get_button(window, text, color, command, fg='white'):
@@ -28,11 +30,11 @@ def get_button(window, text, color, command, fg='white'):
 def get_ctk_button(window, text, color, command):
     button = ctk.CTkButton(master=window,
                            width=120,
-                           height=35,
+                           height=50,
                            text=text,
                            command=command,
                            fg_color='black',
-                           corner_radius=20,
+                           corner_radius=50,
                            font=('Century Gothic', 16)
                            )
     return button
@@ -59,21 +61,52 @@ def get_entry_text(window):
     return inputtxt
 
 
+'#custom tkinter input'
+
+
 def get_entry_input(window, placeholder_text):
-    inputtxt = ctk.CTkEntry(window, placeholder_text=placeholder_text, height=50, width=300, font=("Arial", 16))
+    inputtxt = ctk.CTkEntry(window, placeholder_text=placeholder_text, height=50, width=300, font=("Arial", 16),
+                            placeholder_text_color='#676767')
     return inputtxt
 
 
-def get_text_ctk_label(window, text):
+'#custom tkinter label'
+
+
+def get_text_ctk_label(window, text, fontsize, text_color):
     label = ctk.CTkLabel(window,
                          text=text,
-                         font=("Century Gothic", 16),
-                         text_color="black",
+                         font=("Century Gothic", fontsize),
+                         text_color=text_color,
                          )
     return label
 
-def msg_box(title, description):
-    messagebox.showinfo(title, description)
+
+'#custom tkinter comboBox'
+def get_combobox(window):
+    values = ['Computer science','Computer Engineering', 'Communications', 'Engineering', 'Business']
+    combobox = ctk.CTkComboBox(window, values=values, width=300, height=50, font=("Arial", 16))
+    return combobox
+
+
+'#custom messagebox'
+
+
+def show_error(text_message):
+    CTkMessagebox(title="Error", message=text_message, icon="cancel")
+
+
+def show_checkmark(text_message):
+    CTkMessagebox(message=text_message,icon="check", option_1="Okay")
+
+def empty_fields(window):
+    name_entry_empty_label = get_text_ctk_label(window, 'Name is not correct.', 14, '#B00000')
+    name_entry_empty_label.place(x=750, y=120)
+    major_entry_empty_label = get_text_ctk_label(window, 'Major is not correct.', 14, '#B00000')
+    major_entry_empty_label.place(x=750, y=240)
+    starting_year_entry_empty_label = get_text_ctk_label(window, 'Starting year is not correct.', 14, '#B00000')
+    starting_year_entry_empty_label.place(x=750, y=360)
+
 
 
 def recognize(img, db_path):
