@@ -23,14 +23,13 @@ def get_button(window, text, color, command, fg='white'):
                         width=20,
                         font=('Helvetica bold', 20)
                     )
-
     return button
 
 
 def get_ctk_button(window, text, color, command):
     button = ctk.CTkButton(master=window,
                            width=120,
-                           height=50,
+                           height=40,
                            text=text,
                            command=command,
                            fg_color='black',
@@ -73,9 +72,8 @@ def get_entry_input(window, placeholder_text):
 '#custom tkinter label'
 
 
-def get_information_text_ctk_label(window, text, fontsize, text_color):
+def get_information_text_ctk_entry(window, fontsize, text_color):
     label = ctk.CTkEntry(window,
-                         textvariable=text,
                          font=("Century Gothic", fontsize),
                          text_color=text_color,
                          height=300,
@@ -84,6 +82,17 @@ def get_information_text_ctk_label(window, text, fontsize, text_color):
                          state='disabled',
                          corner_radius=50
                          )
+    return label
+
+def get_information_text_ctk_label(window, text, fontsize, text_color):
+    label = ctk.CTkLabel(window,
+                         text=text,
+                         font=("Century Gothic", fontsize),
+                         text_color=text_color,
+                         height=300,
+                         width=300,
+                         justify='left',
+                     )
     return label
 
 def get_text_ctk_label(window, text, fontsize, text_color):

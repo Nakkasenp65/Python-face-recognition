@@ -34,7 +34,7 @@ class App:
         print(self.student_id)
 
         self.main_window = tk.Tk()
-        self.main_window.geometry("1200x520+350+100")
+        self.main_window.geometry("980x520+350+100")
         self.main_window.title("Face Recognition")
 
         self.show_total_students_label = util.get_text_ctk_label(self.main_window, 'Total students: ', 16, 'black')
@@ -43,17 +43,17 @@ class App:
         self.show_total_students_label = util.get_text_ctk_label(self.main_window, str(self.student_id), 16, 'black')
         self.show_total_students_label.place(x=870, y=70)
 
-        self.title_text_main_window = util.get_text_ctk_label(self.main_window, "Face Recognition", 36, "black")
+        self.title_text_main_window = util.get_text_ctk_label(self.main_window, "Face Recognition", 24, "black")
         self.title_text_main_window.place(x=750, y=20)
 
         self.login_button_main_window = util.get_ctk_button(self.main_window, "Login", "black", self.login )
-        self.login_button_main_window.place(x=750, y=300)
+        self.login_button_main_window.place(x=820, y=300)
 
         self.register_button_main_window = util.get_ctk_button(self.main_window, "Register", "black", self.register_new_user )
-        self.register_button_main_window.place(x=890, y=300)
+        self.register_button_main_window.place(x=820, y=360)
 
-        self.show_profile_button_new_user_window = util.get_ctk_button(self.main_window, 'Show Profile','blue', self.show_profile)
-        self.show_profile_button_new_user_window.place(x=1030, y=300)
+        self.show_profile_button_new_user_window = util.get_ctk_button(self.main_window, 'Profile','blue', self.show_profile)
+        self.show_profile_button_new_user_window.place(x=820, y=420)
 
         self.webcam_label = util.get_img_label(self.main_window)
         self.webcam_label.place(x=10, y=0, width=700, height=500)
@@ -159,8 +159,11 @@ class App:
 
         self.add_profile_img_to_label(static_student_id, self.capture_label)
 
-        self.information_entry_label_register_new_user = util.get_information_text_ctk_label(self.register_new_user_window, student_information, 24, 'white')
-        self.information_entry_label_register_new_user.place(x=750, y=40)
+        self.profile_label_register_new_user = util.get_text_ctk_label(self.register_new_user_window, 'Profile', 36, 'white')
+        self.profile_label_register_new_user.place(x=750, y=20)
+
+        self.information_label_register_new_user = util.get_information_text_ctk_label(self.register_new_user_window, student_information, 24, 'white')
+        self.information_label_register_new_user.place(x=750, y=60)
 
 
 
