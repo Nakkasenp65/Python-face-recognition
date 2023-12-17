@@ -4,14 +4,18 @@ import subprocess
 import tkinter as tk
 import util
 import cv2
+import numpy as np
 from PIL import Image, ImageTk
+
 import face_recognition
 import customtkinter as ctk
 from customtkinter import CTkImage
 
+
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+from firebase_admin import storage
 
 
 
@@ -19,19 +23,38 @@ class App:
 
     cred = credentials.Certificate("serviceAccountKey.json")
     firebase_admin.initialize_app(cred, {
-        'databaseURL': "https://faceattendacerealtime-ffcf8-default-rtdb.firebaseio.com/"
+        'databaseURL': "https://faceattendacerealtime-ffcf8-default-rtdb.firebaseio.com/",
+        'storageBucket': "faceattendacerealtime-ffcf8.appspot.com"
     })
 
+   
 
     def __init__(self):
+        
+        self.db_dir = './db'
+        total_known_faces = 0
+        for path in os.listdir(self.db_dir):
+            if path.endswith('.jpg'):
+                total_known_faces += 1
+        print('Total local registered face: ',total_known_faces)
 
+        self.bucket = storage.bucket()
         self.ref = db.reference('Students')
+        
         self.total_student_object = self.ref.get()
         if self.total_student_object is None:
             self.student_id = 0
         else:
             self.student_id = len(self.ref.get())-1
-        print(self.student_id)
+        print('Total firebase registered student: ', self.student_id)
+
+        if total_known_faces != self.student_id:
+            print('Syncing database images with localdb...')
+            self.sync_database_images_with_localdb()
+            print('Syncing completed.')
+        else: 
+            print('Database images and localdb are synced.')
+            print('Starting app...')
 
         self.main_window = tk.Tk()
         self.main_window.geometry("960x500+350+100")
@@ -60,9 +83,18 @@ class App:
 
         self.add_webcam(self.webcam_label)
 
-        self.db_dir = './db'
         if not os.path.exists(self.db_dir):
             os.mkdir(self.db_dir)
+
+    def sync_database_images_with_localdb(self):
+        # total_student = self.student_id
+        for i in range(1, self.student_id+1):
+            blob = self.bucket.get_blob(f'Images/{i}.jpg')
+            array = np.frombuffer(blob.download_as_string(), np.uint8)
+            imgStudent = cv2.imdecode(array, cv2.COLOR_BGRA2BGR)
+            cv2.imwrite(os.path.join(self.db_dir, str(i) + '.jpg'), imgStudent)
+            print(i, '.jpg sync')
+
 
     def add_webcam(self, label):
         if 'cap' not in self.__dict__:
@@ -141,21 +173,29 @@ class App:
             util.show_error("Sorry, no face detected.\n\nPlease, Try again")
             return
         else:
-            static_student_id
+            pass
 
-        student_name = self.ref.child(static_student_id).get()['name']
-        student_major = self.ref.child(static_student_id).get()['major']
-        student_starting_year = self.ref.child(static_student_id).get()['starting_year']
-        student_year = self.ref.child(static_student_id).get()['year']
-        student_total_attendance = self.ref.child(static_student_id).get()['total_attendance']
-        student_last_attendance = self.ref.child(static_student_id).get()['last_attendance']
-        student_information = ("Student id: " + static_student_id
-                         + "\nName: " + student_name
-                         + "\nMajor: " + student_major
-                         + "\nStarting year: "+student_starting_year
-                         + "\nYear: "+str(student_year)
-                         + "\nTotal attendance: " + str(student_total_attendance)
-                         + "\nLast attendance: " + student_last_attendance)
+        student_data = self.ref.child(static_student_id).get()
+        if student_data is None:
+            util.show_error("Error retrieving student information.")
+            return
+
+        student_name = student_data.get('name', 'N/A')
+        student_major = student_data.get('major', 'N/A')
+        student_starting_year = student_data.get('starting_year', 'N/A')
+        student_year = student_data.get('year', 'N/A')
+        student_total_attendance = student_data.get('total_attendance', 'N/A')
+        student_last_attendance = student_data.get('last_attendance', 'N/A')
+
+        student_information = (
+            "Student id: " + static_student_id
+            + "\nName: " + student_name
+            + "\nMajor: " + student_major
+            + "\nStarting year: " + student_starting_year
+            + "\nYear: " + str(student_year)
+            + "\nTotal attendance: " + str(student_total_attendance)
+            + "\nLast attendance: " + student_last_attendance
+        )
 
         self.register_new_user_window = ctk.CTkToplevel(self.main_window)
         self.register_new_user_window.geometry("1200x520+370+120")
@@ -278,8 +318,13 @@ class App:
             'total_attendance': 0,
             'last_attendance': 'Never'
         }
-        # ref.child(str(student_id)).set(data)
         ref.child(str(student_id)).set(data)
+
+    
+    def upload_image(self, fileName):
+        bucket = storage.bucket()
+        blob = bucket.blob('Images/' + fileName)
+        blob.upload_from_filename(os.path.join(self.db_dir, fileName))
 
     def accept_register_new_user(self):
 
@@ -293,12 +338,15 @@ class App:
             return
 
         else:
-            util.show_checkmark("Registered success.")
-
             self.student_id += 1
-            self.add_to_db(name, major, starting_year, self.student_id)
             cv2.imwrite(os.path.join(self.db_dir, str(self.student_id) + '.jpg'), self.register_new_user_capture)
+            print(f'Images/' + str(self.student_id) + '.jpg')
+            file_name = str(self.student_id) + '.jpg'
+            self.upload_image(file_name)
+            self.add_to_db(name, major, starting_year, self.student_id)
+
             self.show_total_students_label.configure(text=str(self.student_id))
+            util.show_checkmark("Registered success.")
             self.register_new_user_window.destroy()
 
 
