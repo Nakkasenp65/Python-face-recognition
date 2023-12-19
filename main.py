@@ -131,7 +131,7 @@ class App:
             check_id = int(static_student_id)
             os.remove(unknown_img_path)
         except ValueError:
-            util.show_error("No match found.")
+            util.show_error("Sorry, no face detected.\n\nPlease, Try again.")
             os.remove(unknown_img_path)
             return
 
