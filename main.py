@@ -21,11 +21,7 @@ from firebase_admin import storage
 
 class App:
 
-    cred = credentials.Certificate("serviceAccountKey.json")
-    firebase_admin.initialize_app(cred, {
-        'databaseURL': "https://faceattendacerealtime-ffcf8-default-rtdb.firebaseio.com/",
-        'storageBucket': "faceattendacerealtime-ffcf8.appspot.com"
-    })
+    
 
    
 
